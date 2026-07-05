@@ -11,9 +11,7 @@ fetch("questions.json")
   .then(response => response.json())
   .then(data => {
     questions = data;
-
     document.getElementById("totalQuestions").innerText = questions.length;
-
     loadQuestion();
   });
 
@@ -22,23 +20,28 @@ function loadQuestion() {
 
     document.getElementById("currentQuestion").innerText = currentQuestion + 1;
 
-    question.innerText = q.question;
+    // FIX: Using the correct JSON key 'question_ja' for Japanese
+    question.innerText = q.question_ja;
 
-    // FIX: Only display bangla text if it exists in the JSON, otherwise clear it out
-    if (q.bangla) {
-        bangla.innerText = q.bangla;
-        bangla.style.display = "block"; // Ensures it's visible if it has content
+    // FIX: Using the correct JSON key 'question_bn' for Bangla
+    if (q.question_bn) {
+        bangla.innerText = q.question_bn;
+        bangla.style.display = "block"; 
     } else {
         bangla.innerText = "";
-        // Optional: bangla.style.display = "none"; // Un-comment this line if you want to completely collapse the HTML space when empty
     }
 
     options.innerHTML = "";
 
-    q.options.forEach((option, index) => {
+    // FIX: Rendering Japanese options (options_ja), but displaying the Bangla translation beneath it
+    q.options_ja.forEach((optionJa, index) => {
         const div = document.createElement("div");
         div.className = "option";
-        div.innerText = option;
+        
+        // This formats it nicely with Japanese text on top and Bangla text right below it
+        const optionBn = q.options_bn[index] ? q.options_bn[index] : "";
+        div.innerHTML = `<div><strong>${optionJa}</strong></div><div style="font-size: 0.9em; color: #555; margin-top: 4px;">${optionBn}</div>`;
+        
         div.onclick = () => checkAnswer(index, div);
         options.appendChild(div);
     });
